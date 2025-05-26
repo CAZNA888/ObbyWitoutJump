@@ -62,6 +62,71 @@
                 meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes'
                 document.getElementsByTagName('head')[0].appendChild(meta)
             }
+let isVisibility = true;
+
+function FocusGame() {
+	canvas.focus();
+}
+
+window.addEventListener('pointerdown', () => {
+	FocusGame();
+	SetVisibility(true);
+});
+
+function SetVisibility (visibility){
+	if (ysdk !== null && initGame === true && isVisibility !== visibility) { 
+		isVisibility = visibility;
+		if (!visibility) {
+			YG2Instance('SetFocusWindowGame', 'false');
+		}
+		else {
+			YG2Instance('SetFocusWindowGame', 'true');
+		}
+	}
+}
+
+document.addEventListener('visibilitychange', function () { 
+	SetVisibility(!document.hidden);
+});
+
+document.addEventListener('blur', function () {
+	SetVisibility (false);
+});
+
+document.addEventListener('focus', function () {
+	SetVisibility(true);
+});
+
+/////// ------------------------------------
+
+
+if ('onblur' in document) {
+  if (!window.blurFocusHandlersInstalled) {
+    window.addEventListener('blur', function() {
+      let blockerButton = document.createElement('button');
+      blockerButton.style.position = 'fixed';
+      blockerButton.style.top = '0';
+      blockerButton.style.left = '0';
+      blockerButton.style.width = '100%';
+      blockerButton.style.height = '100%';
+      blockerButton.style.zIndex = '9999';
+      blockerButton.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+      blockerButton.style.border = 'none';
+      blockerButton.style.cursor = 'default';
+      document.body.appendChild(blockerButton);
+
+      function removeBlockerButton() {
+        if (blockerButton && blockerButton.parentNode) {
+          blockerButton.parentNode.removeChild(blockerButton);
+        }
+        window.removeEventListener('focus', removeBlockerButton);
+      }
+      window.addEventListener('focus', removeBlockerButton);
+    });
+    window.blurFocusHandlersInstalled = true;
+  }
+}
+
 
             let canvas = document.getElementById('canvas')
             let loadingOverlay = document.getElementById('loading-overlay')
